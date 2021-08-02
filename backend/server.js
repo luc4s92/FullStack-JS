@@ -18,7 +18,8 @@ const pool = mysql.createPool({
     database: 'lucas'
 })
 
-app.get('', (req, res) =>{
+// Get all budgets
+app.get('/', (req, res) =>{
 
     pool.getConnection((err, connection) =>{
         if(err) throw err
@@ -29,6 +30,46 @@ app.get('', (req, res) =>{
 
             if(!err){
                 res.send(rows)
+            }else{
+                console.log(err)
+            }
+        })
+
+    })
+})
+
+// Get a budget by ID
+app.get('/:id', (req, res) =>{
+
+    pool.getConnection((err, connection) =>{
+        if(err) throw err
+        console.log(`connected as id ${connection.threadId}`)
+
+        connection.query('SELECT * from budgets WHERE id = ?',[req.params.id], (err, rows) =>{
+            connection.release()
+
+            if(!err){
+                res.send(rows)
+            }else{
+                console.log(err)
+            }
+        })
+
+    })
+})
+
+// Delete a budget
+app.delete('/:id', (req, res) =>{
+
+    pool.getConnection((err, connection) =>{
+        if(err) throw err
+        console.log(`connected as id ${connection.threadId}`)
+
+        connection.query('DELETE from budgets WHERE id = ?',[req.params.id], (err, rows) =>{
+            connection.release()
+
+            if(!err){
+                res.send(`Budget with the record ID: ${[req.params.id]} has been removed`)
             }else{
                 console.log(err)
             }
