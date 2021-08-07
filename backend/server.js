@@ -78,6 +78,28 @@ app.delete('/:id', (req, res) =>{
     })
 })
 
+// Add a budget
+app.post('/', (req, res) =>{
+
+    pool.getConnection((err, connection) =>{
+        if(err) throw err
+        console.log(`connected as id ${connection.threadId}`)
+
+        const params = req.body
+
+        connection.query('INSERT INTO budgets SET ?',params, (err, rows) =>{
+            connection.release()
+
+            if(!err){
+                res.send(`Budget with the concept: ${params.concept} has been added`)
+            }else{
+                console.log(err)
+            }
+        })
+        console.log(req.body)
+    })
+})
+
 //Listen on enviroment port or 5000
 app.listen(port, () =>{
     console.log(`Listen on port ${port}`)
